@@ -1,0 +1,7 @@
+name: Material Admin Support
+type: module
+description: Support module extends the functionality of material_admin theme
+core: 8.x
+package: Custom
+dependencies:
+  - type_style

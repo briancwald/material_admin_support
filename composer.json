@@ -1,0 +1,14 @@
+{
+  "name": "drupal/material_admin_support",
+  "type": "drupal-module",
+  "description": "Support module extends the functionality of Material_admin theme",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/material_admin_support",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/material_admin_support",
+    "source": "http://cgit.drupalcode.org/material_admin_support"
+  },
+  "require": { }
+}

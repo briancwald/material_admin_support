@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains material_admin_support.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function material_admin_support_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the material_admin_support module.
+    case 'help.page.material_admin_support':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Support module extends the functionality of Material_admin theme') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function material_admin_support_theme() {
+  return [
+    'material_admin_support' => [
+      'render element' => 'children',
+    ],
+  ];
+}
