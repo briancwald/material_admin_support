@@ -1,0 +1,6 @@
+global:
+  version: VERSION
+  css:
+    base:
+      css/global.css: {}
+      fonts/socicon/style.css: {}

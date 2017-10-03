@@ -1,0 +1,152 @@
+<?php
+
+/**
+ * @file
+ * Contains material_admin_support.install.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function material_admin_support_install() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  // Generate Type Style defaults for all content/media types, with some smart
+  // presets built-in.
+  $style_presets = [
+    'article' => [
+      'color' => '#039BE5',
+      'icon' => 'book',
+    ],
+    'page' => [
+      'color' => '#f57f17',
+      'icon' => 'web_asset',
+    ],
+    'product' => [
+      'color' => '#43A047',
+      'icon' => 'shopping_cart',
+    ],
+    'landing_page' => [
+      'color' => '#009688',
+      'icon' => 'star',
+    ],
+  ];
+  if (\Drupal::moduleHandler()->moduleExists('node')) {
+    /** @var \Drupal\node\NodeTypeInterface[] $content_types */
+    $content_types = $entity_type_manager
+      ->getStorage('node_type')
+      ->loadMultiple();
+    foreach ($content_types as $id => $type) {
+      if (!empty($type->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
+        $type->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
+        $type->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
+        $type->save();
+      }
+    }
+  }
+  $style_presets = [
+    'document' => [
+      'color' => '#43A047',
+      'icon' => 'insert_drive_file',
+    ],
+    'image' => [
+      'color' => '#2196F3',
+      'icon' => 'insert_photo',
+    ],
+    'video' => [
+      'color' => '#F44336',
+      'icon' => 'movie',
+    ],
+    'twitter' => [
+      'color' => '#03A9F4',
+      'icon' => 'twitter',
+    ],
+    'instagram' => [
+      'color' => '#AB47BC',
+      'icon' => 'instagram',
+    ],
+  ];
+  if (\Drupal::moduleHandler()->moduleExists('media_entity')) {
+    /** @var \Drupal\media_entity\MediaBundleInterface[] $media_bundles */
+    $media_bundles = $entity_type_manager
+      ->getStorage('media_bundle')
+      ->loadMultiple();
+    foreach ($media_bundles as $id => $bundle) {
+      if (!empty($bundle->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
+        $bundle->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
+        $bundle->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
+        $bundle->save();
+      }
+    }
+  }
+  $style_presets = [
+    'archived' => [
+      'color' => '#00897b',
+      'icon' => 'archive',
+    ],
+    'draft' => [
+      'color' => '#EF6C00',
+      'icon' => 'edit',
+    ],
+    'needs_review' => [
+      'color' => '#ff8f00',
+      'icon' => 'speaker_notes',
+    ],
+    'published' => [
+      'color' => '#689f38',
+      'icon' => 'public',
+    ],
+  ];
+  if (\Drupal::moduleHandler()->moduleExists('type_style_moderation')) {
+    /** @var \Drupal\workbench_moderation\ModerationStateInterface[] $moderation_states */
+    $moderation_states = $entity_type_manager
+      ->getStorage('moderation_state')
+      ->loadMultiple();
+    foreach ($moderation_states as $id => $state) {
+      if (!empty($state->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
+        $state->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
+        $state->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
+        $state->save();
+      }
+    }
+    /** @var \Drupal\workbench_moderation\ModerationStateTransitionInterface[] $moderation_state_transitions */
+    $moderation_state_transitions = $entity_type_manager
+      ->getStorage('moderation_state_transition')
+      ->loadMultiple();
+    foreach ($moderation_state_transitions as $id => $transition) {
+      if (!empty($transition->getThirdPartySettings('type_style')) && isset($style_presets[$transition->getToState()])) {
+        $transition->setThirdPartySetting('type_style', 'color', $style_presets[$transition->getToState()]['color']);
+        $transition->setThirdPartySetting('type_style', 'icon', $style_presets[$transition->getToState()]['icon']);
+        $transition->setSyncing(TRUE);
+        $transition->save();
+      }
+    }
+  }
+  // Add material classes to known views.
+  if (\Drupal::moduleHandler()->moduleExists('views')) {
+    $storage = $entity_type_manager
+      ->getStorage('view');
+    /** @var \Drupal\views\ViewEntityInterface $view */
+    if ($view = $storage->load('content_browser')) {
+      $display = &$view->getDisplay('default');
+      if (!empty($display)) {
+        $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
+        $display['display_options']['css_class'] = 'row';
+        $view->save();
+      }
+    }
+    /** @var \Drupal\views\ViewEntityInterface $view */
+    if ($view = $storage->load('media')) {
+      $display = &$view->getDisplay('entity_browser_1');
+      if (!empty($display)) {
+        $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
+        $display['display_options']['css_class'] = 'row';
+      }
+      $display = &$view->getDisplay('entity_browser_2');
+      if (!empty($display)) {
+        $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
+        $display['display_options']['css_class'] = 'row';
+      }
+      $view->save();
+    }
+  }
+}
