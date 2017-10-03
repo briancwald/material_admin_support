@@ -127,7 +127,7 @@ function material_admin_support_preprocess_block(&$variables) {
           ];
         }
       }
-      if ($any_access) {
+      if ($any_access && isset($variables['content']['lightning_media.bulk_upload'])) {
         $url = new Url('lightning_media.bulk_upload');
         $links[] = [
           'color' => '#ff6f00',
@@ -142,6 +142,9 @@ function material_admin_support_preprocess_block(&$variables) {
     $variables['content'] = [
       '#theme' => 'material_admin_support_fab',
       '#links' => $links,
+      '#cache' => [
+        'contexts' => ['route', 'user.permissions']
+      ],
     ];
   }
 }
