@@ -39,6 +39,15 @@ function material_admin_support_theme() {
       'base hook' => 'media_entity',
       'template' => 'media--media-browser',
     ],
+    'material_admin_support_fab' => [
+      'base hook' => 'material_admin_support_fab',
+      'template' => 'material-admin-support-fab',
+      'variables' => [
+        'color' => 'red',
+        'icon' => 'add',
+        'links' => [],
+      ],
+    ],
   ];
 }
 
@@ -53,6 +62,7 @@ function material_admin_support_page_attachments(array &$page) {
  * Implements hook_library_info_alter().
  */
 function material_admin_library_info_alter(&$libraries, $extension) {
+  // Completely override other entity browser modules with our styling/logic.
   $path = '/' . drupal_get_path('module', 'material_admin_support');
   $base_definition = [
     'version' => 'VERSION',
@@ -85,36 +95,15 @@ function material_admin_library_info_alter(&$libraries, $extension) {
  * Implements hook_preprocess_block.
  */
 function material_admin_support_preprocess_block(&$variables) {
-  $template = '<div class="fixed-action-btn horizontal">
-        <a class="btn-floating btn-large {{ fab_color }}">
-          <i class="large material-icons">{{ fab_icon }}</i>
-        </a>
-        <ul>
-          {%- for link in fab_links -%}
-            <li>
-              <a class="btn-floating tooltipped" data-position="top" data-delay="600" data-tooltip="{{ link.tooltip }}" style="background-color: {{ link.color }};" href="{{ link.href }}">
-                {% if link.icon == \'instagram\' or link.icon == \'twitter\' %}
-                  <i class="socicon-{{ link.icon }} left" style="font-size: 1.2rem;"></i>
-                {% else %}
-                  <i class="material-icons left">{{ link.icon }}</i>
-                {% endif %}
-              </a>
-            </li>
-          {%- endfor -%}
-        </ul>
-      </div>';
-  $template_vars = [];
+  $links = [];
   if ($variables['plugin_id'] == 'local_actions_block') {
     if (isset($variables['content']['node.add_page'])) {
-      $template_vars['fab_color'] = 'red';
-      $template_vars['fab_icon'] = 'add';
-      $template_vars['fab_links'] = [];
       /** @var \Drupal\node\NodeTypeInterface $type */
       foreach (\Drupal::entityTypeManager()->getStorage('node_type')->loadMultiple() as $type) {
         $access = \Drupal::entityTypeManager()->getAccessControlHandler('node')->createAccess($type->id(), NULL, [], TRUE);
         if ($access->isAllowed()) {
           $url = new Url('node.add', ['node_type' => $type->id()]);
-          $template_vars['fab_links'][] = [
+          $links[] = [
             'color' => type_style_get_style($type, 'color', '#039BE5'),
             'icon' => type_style_get_style($type, 'icon', 'star'),
             'href' => $url->toString(),
@@ -123,9 +112,6 @@ function material_admin_support_preprocess_block(&$variables) {
         }
       }
     } elseif (isset($variables['content']['media.add'])) {
-      $template_vars['fab_color'] = 'red';
-      $template_vars['fab_icon'] = 'add';
-      $template_vars['fab_links'] = [];
       /** @var \Drupal\media_entity\Entity\MediaBundle $type */
       $any_access = FALSE;
       foreach (\Drupal::entityTypeManager()->getStorage('media_bundle')->loadMultiple() as $type) {
@@ -133,7 +119,7 @@ function material_admin_support_preprocess_block(&$variables) {
         if ($access->isAllowed()) {
           $any_access = TRUE;
           $url = new Url('entity.media.add_form', ['media_bundle' => $type->id()]);
-          $template_vars['fab_links'][] = [
+          $links[] = [
             'color' => type_style_get_style($type, 'color', '#039BE5'),
             'icon' => type_style_get_style($type, 'icon', 'star'),
             'href' => $url->toString(),
@@ -143,7 +129,7 @@ function material_admin_support_preprocess_block(&$variables) {
       }
       if ($any_access) {
         $url = new Url('lightning_media.bulk_upload');
-        $template_vars['fab_links'][] = [
+        $links[] = [
           'color' => '#ff6f00',
           'icon' => 'file_upload',
           'href' => $url->toString(),
@@ -152,11 +138,10 @@ function material_admin_support_preprocess_block(&$variables) {
       }
     }
   }
-  if (!empty($template_vars)) {
+  if (!empty($links)) {
     $variables['content'] = [
-      '#type' => 'inline_template',
-      '#template' => $template,
-      '#context' => $template_vars,
+      '#theme' => 'material_admin_support_fab',
+      '#links' => $links,
     ];
   }
 }

@@ -5,11 +5,14 @@
  * Contains material_admin_support.install.
  */
 
+use Drupal\Core\Entity\Entity\EntityViewMode;
+
 /**
  * Implements hook_install().
  */
 function material_admin_support_install() {
   $entity_type_manager = \Drupal::entityTypeManager();
+  $module_handler = \Drupal::moduleHandler();
   // Generate Type Style defaults for all content/media types, with some smart
   // presets built-in.
   $style_presets = [
@@ -30,13 +33,13 @@ function material_admin_support_install() {
       'icon' => 'star',
     ],
   ];
-  if (\Drupal::moduleHandler()->moduleExists('node')) {
+  if ($module_handler->moduleExists('node')) {
     /** @var \Drupal\node\NodeTypeInterface[] $content_types */
     $content_types = $entity_type_manager
       ->getStorage('node_type')
       ->loadMultiple();
     foreach ($content_types as $id => $type) {
-      if (!empty($type->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
+      if (empty($type->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
         $type->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
         $type->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
         $type->save();
@@ -56,7 +59,7 @@ function material_admin_support_install() {
       'color' => '#F44336',
       'icon' => 'movie',
     ],
-    'twitter' => [
+    'tweet' => [
       'color' => '#03A9F4',
       'icon' => 'twitter',
     ],
@@ -65,13 +68,13 @@ function material_admin_support_install() {
       'icon' => 'instagram',
     ],
   ];
-  if (\Drupal::moduleHandler()->moduleExists('media_entity')) {
+  if ($module_handler->moduleExists('media_entity')) {
     /** @var \Drupal\media_entity\MediaBundleInterface[] $media_bundles */
     $media_bundles = $entity_type_manager
       ->getStorage('media_bundle')
       ->loadMultiple();
     foreach ($media_bundles as $id => $bundle) {
-      if (!empty($bundle->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
+      if (empty($bundle->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
         $bundle->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
         $bundle->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
         $bundle->save();
@@ -96,13 +99,13 @@ function material_admin_support_install() {
       'icon' => 'public',
     ],
   ];
-  if (\Drupal::moduleHandler()->moduleExists('type_style_moderation')) {
+  if ($module_handler->moduleExists('type_style_moderation')) {
     /** @var \Drupal\workbench_moderation\ModerationStateInterface[] $moderation_states */
     $moderation_states = $entity_type_manager
       ->getStorage('moderation_state')
       ->loadMultiple();
     foreach ($moderation_states as $id => $state) {
-      if (!empty($state->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
+      if (empty($state->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
         $state->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
         $state->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
         $state->save();
@@ -113,7 +116,7 @@ function material_admin_support_install() {
       ->getStorage('moderation_state_transition')
       ->loadMultiple();
     foreach ($moderation_state_transitions as $id => $transition) {
-      if (!empty($transition->getThirdPartySettings('type_style')) && isset($style_presets[$transition->getToState()])) {
+      if (empty($transition->getThirdPartySettings('type_style')) && isset($style_presets[$transition->getToState()])) {
         $transition->setThirdPartySetting('type_style', 'color', $style_presets[$transition->getToState()]['color']);
         $transition->setThirdPartySetting('type_style', 'icon', $style_presets[$transition->getToState()]['icon']);
         $transition->setSyncing(TRUE);
@@ -122,7 +125,7 @@ function material_admin_support_install() {
     }
   }
   // Add material classes to known views.
-  if (\Drupal::moduleHandler()->moduleExists('views')) {
+  if ($module_handler->moduleExists('views')) {
     $storage = $entity_type_manager
       ->getStorage('view');
     /** @var \Drupal\views\ViewEntityInterface $view */
@@ -135,14 +138,86 @@ function material_admin_support_install() {
       }
     }
     /** @var \Drupal\views\ViewEntityInterface $view */
-    if ($view = $storage->load('media')) {
+    if ($module_handler->moduleExists('lightning_media')) {
+      $view = $storage->load('media');
+      if (!EntityViewMode::load('media.media_browser')) {
+        $view_mode = EntityViewMode::create([
+          'id' => 'media.media_browser',
+          'targetEntityType' => 'media',
+          'label' => 'Media Browser',
+          'dependencies' => [
+            'lightning_core',
+            'media_entity',
+          ],
+        ]);
+        $view_mode->setThirdPartySetting('lightning_core', 'description', 'A view mode for use with the Media library');
+        $view_mode->save();
+      }
+
+      $field = [
+        'id' => 'rendered_entity',
+        'table' => 'media',
+        'field' => 'rendered_entity',
+        'relationship' => 'none',
+        'group_type' => 'group',
+        'admin_label' => '',
+        'label' => '',
+        'exclude' => FALSE,
+        'alter' => [
+          'alter_text' => FALSE,
+          'text' => '',
+          'make_link' => FALSE,
+          'path' => '',
+          'absolute' => FALSE,
+          'external' => FALSE,
+          'replace_spaces' => FALSE,
+          'path_case' => 'none',
+          'trim_whitespace' => FALSE,
+          'alt' => '',
+          'rel' => '',
+          'link_class' => '',
+          'prefix' => '',
+          'suffix' => '',
+          'target' => '',
+          'nl2br' => FALSE,
+          'max_length' => 0,
+          'word_boundary' => TRUE,
+          'ellipsis' => TRUE,
+          'more_link' => FALSE,
+          'more_link_text' => '',
+          'more_link_path' => '',
+          'strip_tags' => FALSE,
+          'trim' => FALSE,
+          'preserve_tags' => '',
+          'html' => FALSE,
+        ],
+        'element_type' => '',
+        'element_class' => '',
+        'element_label_type' => '',
+        'element_label_class' => '',
+        'element_label_colon' => FALSE,
+        'element_wrapper_type' => '',
+        'element_wrapper_class' => '',
+        'element_default_classes' => TRUE,
+        'empty' => '',
+        'hide_empty' => FALSE,
+        'empty_zero' => FALSE,
+        'hide_alter_empty' => TRUE,
+        'view_mode' => 'media_browser',
+        'entity_type' => 'media',
+        'plugin_id' => 'rendered_entity',
+      ];
       $display = &$view->getDisplay('entity_browser_1');
       if (!empty($display)) {
+        unset($display['display_options']['fields']['thumbnail__target_id']);
+        $display['display_options']['fields']['rendered_entity'] = $field;
         $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
         $display['display_options']['css_class'] = 'row';
       }
       $display = &$view->getDisplay('entity_browser_2');
       if (!empty($display)) {
+        unset($display['display_options']['fields']['thumbnail__target_id']);
+        $display['display_options']['fields']['rendered_entity'] = $field;
         $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
         $display['display_options']['css_class'] = 'row';
       }
