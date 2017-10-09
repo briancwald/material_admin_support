@@ -96,11 +96,12 @@ function material_admin_library_info_alter(&$libraries, $extension) {
  */
 function material_admin_support_preprocess_block(&$variables) {
   $links = [];
+  $manager = \Drupal::entityTypeManager();
   if ($variables['plugin_id'] == 'local_actions_block') {
     if (isset($variables['content']['node.add_page'])) {
       /** @var \Drupal\node\NodeTypeInterface $type */
-      foreach (\Drupal::entityTypeManager()->getStorage('node_type')->loadMultiple() as $type) {
-        $access = \Drupal::entityTypeManager()->getAccessControlHandler('node')->createAccess($type->id(), NULL, [], TRUE);
+      foreach ($manager->getStorage('node_type')->loadMultiple() as $type) {
+        $access = $manager->getAccessControlHandler('node')->createAccess($type->id(), NULL, [], TRUE);
         if ($access->isAllowed()) {
           $url = new Url('node.add', ['node_type' => $type->id()]);
           $links[] = [
@@ -114,8 +115,8 @@ function material_admin_support_preprocess_block(&$variables) {
     } elseif (isset($variables['content']['media.add'])) {
       /** @var \Drupal\media_entity\Entity\MediaBundle $type */
       $any_access = FALSE;
-      foreach (\Drupal::entityTypeManager()->getStorage('media_bundle')->loadMultiple() as $type) {
-        $access = \Drupal::entityTypeManager()->getAccessControlHandler('media')->createAccess($type->id(), NULL, [], TRUE);
+      foreach ($manager->getStorage('media_bundle')->loadMultiple() as $type) {
+        $access = $manager->getAccessControlHandler('media')->createAccess($type->id(), NULL, [], TRUE);
         if ($access->isAllowed()) {
           $any_access = TRUE;
           $url = new Url('entity.media.add_form', ['media_bundle' => $type->id()]);
@@ -155,7 +156,7 @@ function material_admin_support_preprocess_block(&$variables) {
 function material_admin_support_module_implements_alter(&$implementations, $hook) {
   // Lightning media overrides the normal Entity Browser widget, but for our
   // use case and admin theme the level of details nesting looks bad.
-  if (strpos($hook, 'field_widget_') === 0 && isset($implementations['lightning_media'])) {
+  if (($hook === 'field_widget_entity_browser_entity_reference_form_alter' || $hook === 'field_widget_form_alter') && isset($implementations['lightning_media'])) {
     unset($implementations['lightning_media']);
   }
 }
