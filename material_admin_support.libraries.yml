@@ -4,3 +4,16 @@ global:
     base:
       css/global.css: {}
       fonts/socicon/style.css: {}
+
+iconpicker:
+  version: VERSION
+  css:
+    base:
+      css/icon_picker.css: {}
+  js:
+    js/icon_picker.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings

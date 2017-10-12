@@ -160,3 +160,21 @@ function material_admin_support_module_implements_alter(&$implementations, $hook
     unset($implementations['lightning_media']);
   }
 }
+
+/**
+ * Attaches the icon picker onto a form element.
+ *
+ * @param array &$element
+ *   A render array element, which should be a textfield.
+ */
+function _material_admin_support_attach_iconpicker(&$element) {
+  $element['#attributes']['class'][] = 'use-material-icon-picker';
+  $element['#attached']['library'][] = 'material_admin_support/iconpicker';
+}
+
+/**
+ * Implements hook_type_style_form_alter().
+ */
+function material_admin_support_type_style_form_alter(array &$form, \Drupal\Core\Config\Entity\ConfigEntityBundleBase $type) {
+  _material_admin_support_attach_iconpicker($form['type_style']['icon']);
+}
