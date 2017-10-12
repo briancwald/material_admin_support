@@ -21,11 +21,11 @@
         var $picker = $('<div class="material-icon-picker" tabindex="-1"></div>');
         var $search = $('<input type="text" placeholder="'+Drupal.t('Search...')+'">');
         // Do simple filtering based on the search.
-        $search.on('keyup change blur', function () {
-          var search = $search.val();
-          $(this).siblings('.icons').children().each(function () {
-            $(this).toggle($(this).text().toLowerCase().indexOf(search.toLowerCase()) !== -1);
-          });
+        $search.on('keyup', function () {
+          var search = $search.val().toLowerCase();
+          var $icons = $(this).siblings('.icons');
+          $icons.find('i').css('display', 'none');
+          $icons.find('i:contains('+search+')').css('display', 'inline-block');
         });
         $picker.append($search);
         // Append each icon into the picker.
