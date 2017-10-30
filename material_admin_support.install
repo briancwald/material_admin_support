@@ -68,12 +68,12 @@ function material_admin_support_install() {
       'icon' => 'instagram',
     ],
   ];
-  if ($module_handler->moduleExists('media_entity')) {
-    /** @var \Drupal\media_entity\MediaBundleInterface[] $media_bundles */
-    $media_bundles = $entity_type_manager
-      ->getStorage('media_bundle')
+  if ($module_handler->moduleExists('media')) {
+    /** @var \Drupal\media\MediaTypeInterface[] $media_types */
+    $media_types = $entity_type_manager
+      ->getStorage('media_type')
       ->loadMultiple();
-    foreach ($media_bundles as $id => $bundle) {
+    foreach ($media_types as $id => $bundle) {
       if (empty($bundle->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
         $bundle->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
         $bundle->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
@@ -147,7 +147,7 @@ function material_admin_support_install() {
           'label' => 'Media Browser',
           'dependencies' => [
             'lightning_core',
-            'media_entity',
+            'media',
           ],
         ]);
         $view_mode->setThirdPartySetting('lightning_core', 'description', 'A view mode for use with the Media library');

@@ -36,7 +36,7 @@ function material_admin_support_theme() {
     ],
     'media__media_browser' => [
       'render element' => 'media',
-      'base hook' => 'media_entity',
+      'base hook' => 'media',
       'template' => 'media--media-browser',
     ],
     'material_admin_support_fab' => [
@@ -113,13 +113,13 @@ function material_admin_support_preprocess_block(&$variables) {
         }
       }
     } elseif (isset($variables['content']['media.add'])) {
-      /** @var \Drupal\media_entity\Entity\MediaBundle $type */
+      /** @var \Drupal\media\Entity\MediaType $type */
       $any_access = FALSE;
-      foreach ($manager->getStorage('media_bundle')->loadMultiple() as $type) {
+      foreach ($manager->getStorage('media_type')->loadMultiple() as $type) {
         $access = $manager->getAccessControlHandler('media')->createAccess($type->id(), NULL, [], TRUE);
         if ($access->isAllowed()) {
           $any_access = TRUE;
-          $url = new Url('entity.media.add_form', ['media_bundle' => $type->id()]);
+          $url = new Url('entity.media.add_form', ['media_type' => $type->id()]);
           $links[] = [
             'color' => type_style_get_style($type, 'color', '#039BE5'),
             'icon' => type_style_get_style($type, 'icon', 'star'),
