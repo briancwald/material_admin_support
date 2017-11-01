@@ -20,6 +20,10 @@
   top: .5rem;
 }
 
+.material-icon-picker-prefix.prefix:empty ~ input {
+  margin-left:0!important;
+}
+
 .material-icon-picker .icons {
   max-width: 300px;
   max-height: 200px;
