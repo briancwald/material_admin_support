@@ -5,8 +5,6 @@
  * Contains material_admin_support.install.
  */
 
-use Drupal\Core\Entity\Entity\EntityViewMode;
-
 /**
  * Implements hook_install().
  */
@@ -129,99 +127,12 @@ function material_admin_support_install() {
     $storage = $entity_type_manager
       ->getStorage('view');
     /** @var \Drupal\views\ViewEntityInterface $view */
-    if ($view = $storage->load('content_browser')) {
-      $display = &$view->getDisplay('default');
-      if (!empty($display)) {
-        $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
-        $display['display_options']['css_class'] = 'row';
-        $view->save();
-      }
+    if (($view = $storage->load('content_browser')) && $view !== NULL) {
+      material_admin_support_view_insert($view);
     }
     /** @var \Drupal\views\ViewEntityInterface $view */
-    if ($module_handler->moduleExists('lightning_media')) {
-      $view = $storage->load('media');
-      if (!EntityViewMode::load('media.media_browser')) {
-        $view_mode = EntityViewMode::create([
-          'id' => 'media.media_browser',
-          'targetEntityType' => 'media',
-          'label' => 'Media Browser',
-          'dependencies' => [
-            'lightning_core',
-            'media',
-          ],
-        ]);
-        $view_mode->setThirdPartySetting('lightning_core', 'description', 'A view mode for use with the Media library');
-        $view_mode->save();
-      }
-
-      $field = [
-        'id' => 'rendered_entity',
-        'table' => 'media',
-        'field' => 'rendered_entity',
-        'relationship' => 'none',
-        'group_type' => 'group',
-        'admin_label' => '',
-        'label' => '',
-        'exclude' => FALSE,
-        'alter' => [
-          'alter_text' => FALSE,
-          'text' => '',
-          'make_link' => FALSE,
-          'path' => '',
-          'absolute' => FALSE,
-          'external' => FALSE,
-          'replace_spaces' => FALSE,
-          'path_case' => 'none',
-          'trim_whitespace' => FALSE,
-          'alt' => '',
-          'rel' => '',
-          'link_class' => '',
-          'prefix' => '',
-          'suffix' => '',
-          'target' => '',
-          'nl2br' => FALSE,
-          'max_length' => 0,
-          'word_boundary' => TRUE,
-          'ellipsis' => TRUE,
-          'more_link' => FALSE,
-          'more_link_text' => '',
-          'more_link_path' => '',
-          'strip_tags' => FALSE,
-          'trim' => FALSE,
-          'preserve_tags' => '',
-          'html' => FALSE,
-        ],
-        'element_type' => '',
-        'element_class' => '',
-        'element_label_type' => '',
-        'element_label_class' => '',
-        'element_label_colon' => FALSE,
-        'element_wrapper_type' => '',
-        'element_wrapper_class' => '',
-        'element_default_classes' => TRUE,
-        'empty' => '',
-        'hide_empty' => FALSE,
-        'empty_zero' => FALSE,
-        'hide_alter_empty' => TRUE,
-        'view_mode' => 'media_browser',
-        'entity_type' => 'media',
-        'plugin_id' => 'rendered_entity',
-      ];
-      $display = &$view->getDisplay('entity_browser_1');
-      if (!empty($display)) {
-        unset($display['display_options']['fields']['thumbnail__target_id']);
-        $display['display_options']['fields']['rendered_entity'] = $field;
-        $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
-        $display['display_options']['css_class'] = 'row';
-      }
-      $display = &$view->getDisplay('entity_browser_2');
-      if (!empty($display)) {
-        unset($display['display_options']['fields']['thumbnail__target_id']);
-        $display['display_options']['fields']['rendered_entity'] = $field;
-        $display['display_options']['style']['options']['row_class'] = 'col s12 m6 l4';
-        $display['display_options']['css_class'] = 'row';
-      }
-      $view->save();
+    if (($view = $storage->load('media')) && $view !== NULL) {
+      material_admin_support_view_insert($view);
     }
   }
 }
