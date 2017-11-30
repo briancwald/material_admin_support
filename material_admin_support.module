@@ -115,7 +115,7 @@ function material_admin_support_preprocess_block(&$variables) {
           ];
         }
       }
-    } elseif (isset($variables['content']['media.add'])) {
+    } elseif (isset($variables['content']['media.add']) && \Drupal::moduleHandler()->moduleExists('media')) {
       /** @var \Drupal\media\Entity\MediaType $type */
       $any_access = FALSE;
       foreach ($manager->getStorage('media_type')->loadMultiple() as $type) {
