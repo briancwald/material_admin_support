@@ -17,3 +17,16 @@ iconpicker:
     - core/jquery
     - core/jquery.once
     - core/drupalSettings
+
+browsers:
+  version: VERSION
+  css:
+    base:
+      css/browsers.css: {}
+  js:
+    js/browsers.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings
