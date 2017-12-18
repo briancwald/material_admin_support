@@ -5,7 +5,6 @@
  * Contains material_admin_support.module.
  */
 
-use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 use Drupal\Core\Entity\Entity\EntityViewMode;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
@@ -178,7 +177,7 @@ function _material_admin_support_attach_iconpicker(&$element) {
 /**
  * Implements hook_type_style_form_alter().
  */
-function material_admin_support_type_style_form_alter(array &$form, ConfigEntityBundleBase $type) {
+function material_admin_support_type_style_form_alter(array &$form) {
   _material_admin_support_attach_iconpicker($form['type_style']['icon']);
 }
 
