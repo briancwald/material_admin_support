@@ -27,3 +27,18 @@
     padding-right: 0;
   }
 }
+
+/**
+ * Entity browser modal enhancements.
+ */
+.ui-dialog-content > div:first-child:last-child:not([class]) {
+  max-height: 100%;
+  width: 100%;
+  position: relative;
+  height: 100%;
+}
+
+/* Fix iframe height inside a dialog */
+.ui-dialog-content > div > iframe.entity-browser-modal-iframe {
+  height: 100% !important;
+}

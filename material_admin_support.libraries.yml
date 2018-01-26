@@ -4,6 +4,12 @@ global:
     base:
       css/global.css: {}
       fonts/socicon/style.css: {}
+  js:
+    js/modal-size-fix.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/jquery.once
 
 iconpicker:
   version: VERSION
@@ -30,3 +36,8 @@ browsers:
     - core/jquery
     - core/jquery.once
     - core/drupalSettings
+
+commerce-product:
+  css:
+    theme:
+      css/commerce-product.css: {}

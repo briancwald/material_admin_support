@@ -1,0 +1,22 @@
+/**
+ * @file
+ * Commerce product browser view mode defaults.
+ */
+
+.card-image-inside {
+  position: relative;
+  background: linear-gradient(#eee, #fff);
+}
+
+.card-image-inside img {
+  height: auto;
+}
+
+.card--product .card-content--product {
+  background: #d3d3d3;
+  color: #000;
+}
+
+.card--product:hover .check-indicator {
+  text-shadow: 0 0 10px #d3d3d3;
+}

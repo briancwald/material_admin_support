@@ -134,5 +134,59 @@ function material_admin_support_install() {
     if (($view = $storage->load('media')) && $view !== NULL) {
       material_admin_support_view_insert($view);
     }
+
+    // Change every entity_browser view display's style settings config.
+    $entity_browser_view_displays = [];
+    /** @var \Drupal\views\ViewEntityInterface[] $views */
+    $views = $storage->loadMultiple();
+
+    // Collect views and all their displays with entity_browser display plugin.
+    foreach ($views as $view_id => $view_data) {
+      foreach ($view_data->get('display') as $display_id => $display_definitions) {
+        if ($display_definitions['display_plugin'] !== 'entity_browser') {
+          continue;
+        };
+
+        // Check whether display has overrides compared to the master display or
+        // not. If latter, than we have to modify the master.
+        $display_options = array_filter($display_definitions['display_options']);
+        $display_to_process = empty($display_options['row']) ? 'default' : $display_id;
+        $entity_browser_view_displays[$view_id][$display_to_process] = $display_to_process;
+      }
+    }
+
+    // Change style configs.
+    foreach ($entity_browser_view_displays as $view_id => $display_ids) {
+      foreach ($display_ids as $display_id) {
+        $display = &$views[$view_id]->getDisplay($display_id);
+        $display['display_options']['style']['type'] = 'default';
+        $display['display_options']['style']['options']['row_class'] = 'col s12 m4 l3 browser--item';
+        $display['display_options']['css_class'] = 'row';
+
+        \Drupal::logger('material_admin_support')->info('View config for display @display-id of @view-id view changed', [
+          '@display-id' => $display_id,
+          '@view-id' => $view_id,
+        ]);
+      }
+
+      $views[$view_id]->save();
+    }
+  }
+
+  // Commerce product support.
+  $product_style_preset = [
+    'color' => '#d3d3d3',
+    'icon' => 'shopping_cart',
+  ];
+  if ($module_handler->moduleExists('commerce_product')) {
+    /** @var \Drupal\commerce_product\Entity\ProductTypeInterface[] $product_types */
+    $product_types = $entity_type_manager
+      ->getStorage('commerce_product_type')
+      ->loadMultiple();
+    foreach ($product_types as $id => $bundle) {
+      $bundle->setThirdPartySetting('type_style', 'color', $product_style_preset['color']);
+      $bundle->setThirdPartySetting('type_style', 'icon', $product_style_preset['icon']);
+      $bundle->save();
+    }
   }
 }

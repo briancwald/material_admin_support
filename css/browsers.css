@@ -163,3 +163,37 @@ nav.eb-tabs  li:only-child {
   color: black;
   font-size: 14px;
 }
+
+/**
+ * Style override for entity browser's layout.
+ */
+
+/* Dismiss the margin of hidden tab links */
+.entity-browser-form .eb-tabs ~ .waves-input-wrapper {
+  margin: 0;
+}
+
+/* Custom grid sizes for entity browsers */
+@media screen and (min-width: 450px) {
+  .entity-browser-form .row .browser--item {
+    width: 50% !important;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .entity-browser-form .row .browser--item {
+    width: 33.3333% !important;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .entity-browser-form .row .browser--item {
+    width: 25% !important;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .entity-browser-form .row .browser--item {
+    width: 20% !important;
+  }
+}
