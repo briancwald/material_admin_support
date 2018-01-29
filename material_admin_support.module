@@ -283,3 +283,16 @@ function material_admin_support_view_insert(ViewEntityInterface $view) {
     $view->save();
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK() for views_view.
+ */
+function material_admin_support_preprocess_views_view(&$variables) {
+  /** @var \Drupal\views\ViewExecutable $view */
+  $view = $variables['view'];
+  $style_plugin_options = $view->style_plugin->options;
+
+  if (!empty($style_plugin_options['row_class']) && strpos($style_plugin_options['row_class'], 'browser--item') !== FALSE) {
+    $variables['#attached']['library'][] = 'material_admin_support/browsers';
+  }
+}

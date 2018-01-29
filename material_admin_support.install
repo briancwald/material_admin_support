@@ -160,8 +160,8 @@ function material_admin_support_install() {
       foreach ($display_ids as $display_id) {
         $display = &$views[$view_id]->getDisplay($display_id);
         $display['display_options']['style']['type'] = 'default';
-        $display['display_options']['style']['options']['row_class'] = 'col s12 m4 l3 browser--item';
-        $display['display_options']['css_class'] = 'row';
+        $display['display_options']['style']['options']['row_class'] = 'browser--item';
+        $display['display_options']['css_class'] = 'browser--row';
 
         \Drupal::logger('material_admin_support')->info('View config for display @display-id of @view-id view changed', [
           '@display-id' => $display_id,
