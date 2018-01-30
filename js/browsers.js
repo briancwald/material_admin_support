@@ -10,16 +10,22 @@
 
   Drupal.behaviors.materialAdminSupportBrowsers = {
     attach: function (context, settings) {
-      $('.views-row').once('bind-click-event').click(function  (e) {
-        e.preventDefault();
+      $('.views-row').once('bind-click-event').each(function () {
         var input = $(this).find('input[type="checkbox"]');
-        input.prop('checked', !input.prop('checked'));
         if (input.prop('checked')) {
           $(this).addClass('checked');
         }
-        else {
-          $(this).removeClass('checked');
-        }
+
+        $(this).click(function (e) {
+          e.preventDefault();
+          input.prop('checked', !input.prop('checked'));
+          if (input.prop('checked')) {
+            $(this).addClass('checked');
+          }
+          else {
+            $(this).removeClass('checked');
+          }
+        });
       });
     }
   }
