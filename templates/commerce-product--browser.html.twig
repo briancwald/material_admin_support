@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Default theme implementation for commerce product's browser view mode.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the wrapper.
+ * - product: The rendered product fields.
+ *   Use 'product' to print them all, or print a subset such as
+ *   'product.title'. Use the following code to exclude the
+ *   printing of a given field:
+ *   @code
+ *   {{ product|without('title') }}
+ *   @endcode
+ * - product_entity: The product entity.
+ * - product_url: The product URL.
+ *
+ * @ingroup themeable
+ */
+#}
+<article{{ attributes.addClass('card', 'content-browser-card', 'card--product') }} style="background: {{ type_style('commerce_product_type', 'individual', 'color', '#d3d3d3') }}">
+  <div class="card-image">
+    <div{{ content_attributes.addClass('card-image-inside') }}>
+      {{ product|without('variation_attributes', 'title') }}
+    </div>
+    <i class="material-icons check-indicator">check_circle</i>
+  </div>
+  <div class="card-content card-content--product">
+    <i class="material-icons left">{{ type_style('commerce_product_type', 'individual', 'icon', 'shopping_cart') }}</i>
+    <p{{ title_attributes }}>
+      {{- product.title -}}
+    </p>
+  </div>
+</article>

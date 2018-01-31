@@ -46,8 +46,6 @@ nav.eb-tabs  li:only-child {
 
 .card .card-content {
   color: white;
-  max-height: 72px;
-  overflow: hidden;
   display: flex;
   align-items: center;
 }
@@ -162,4 +160,103 @@ nav.eb-tabs  li:only-child {
 .messages .message-content {
   color: black;
   font-size: 14px;
+}
+
+/**
+ * Style override for entity browser's layout.
+ */
+
+/* Dismiss the margin of hidden tab links */
+.entity-browser-form .eb-tabs ~ .waves-input-wrapper {
+  margin: 0;
+}
+
+/**
+ * Grid system for entity browsers.
+ */
+.browser--row .view-content,
+.browser--row .view-content [data-drupal-views-infinite-scroll-content-wrapper] {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.browser--item .card,
+.browser--item > .views-field-rendered-entity,
+.browser--item > .views-field-rendered-entity > .field-content {
+  display: flex;
+  width: 100%;
+  border-radius: 2px;
+}
+
+.browser--item .card {
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0;
+  transform: translateZ(0);
+}
+
+.browser--item .card-image {
+  transform: translateZ(0);
+}
+
+.browser--item .card-content {
+  font-size: 12px;
+  flex: 1 0 auto;
+  transform: translateZ(0);
+}
+
+@media screen and (min-width: 700px) {
+  .browser--item .card-content {
+    font-size: 14px;
+  }
+}
+
+/**
+ * Views preview.
+ */
+.views-live-preview div.views-row.browser--item + div.views-row.browser--item {
+  margin-top: 0;
+}
+
+.views-live-preview .browser--item .views-field {
+  width: 100%;
+}
+
+.views-live-preview .browser--item .field-content,
+.views-live-preview .browser--item .card {
+  height: 100%;
+}
+
+/**
+ * Custom grid and column sizes for entity browser items
+ */
+.browser--row .browser--item {
+  display: flex;
+  margin-bottom: 1.5rem;
+  padding: 0 0.75rem;
+  transform: translateZ(0);
+}
+
+@media screen and (min-width: 450px) {
+  .browser--row .browser--item {
+    width: 50%;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .browser--row .browser--item {
+    width: 33.3333%;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .browser--row .browser--item {
+    width: 25%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .browser--row .browser--item {
+    width: 20%;
+  }
 }
