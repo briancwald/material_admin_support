@@ -15,14 +15,11 @@ use Drupal\views\ViewEntityInterface;
  */
 function material_admin_support_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
-    // Main module help for the material_admin_support module.
     case 'help.page.material_admin_support':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('Support module extends the functionality of Material_admin theme') . '</p>';
       return $output;
-
-    default:
   }
 }
 
@@ -60,6 +57,7 @@ function material_admin_support_theme() {
  * Implements hook_page_attachments().
  */
 function material_admin_support_page_attachments(array &$page) {
+  // Attach the global material admin support library to every page.
   $page['#attached']['library'][] = 'material_admin_support/global';
 }
 
@@ -76,8 +74,8 @@ function material_admin_support_preprocess_commerce_product__browser(&$variables
  * Implements hook_library_info_alter().
  */
 function material_admin_library_info_alter(&$libraries, $extension) {
-  // Completely override other entity browser modules with our styling/logic.
   $path = '/' . drupal_get_path('module', 'material_admin_support');
+
   $base_definition = [
     'version' => 'VERSION',
     'css' => [
@@ -94,6 +92,8 @@ function material_admin_library_info_alter(&$libraries, $extension) {
       'core/drupal',
     ],
   ];
+
+  // Completely override other entity browser modules with our styling/logic.
   if ($extension == 'content_browser') {
     $libraries['view'] = $base_definition;
   }
@@ -109,13 +109,21 @@ function material_admin_library_info_alter(&$libraries, $extension) {
  * Implements hook_preprocess_block().
  */
 function material_admin_support_preprocess_block(&$variables) {
-  $links = [];
-  $manager = \Drupal::entityTypeManager();
+  // Alter the 'local actions' block, converting it into floating action
+  // buttons (FAB).
   if ($variables['plugin_id'] == 'local_actions_block') {
-    if (isset($variables['content']['node.add_page'])) {
+    $links = [];
+    $manager = \Drupal::entityTypeManager();
+
+    // Convert the 'node add' page into FABs.
+    if (\Drupal::moduleHandler()->moduleExists('node') && isset($variables['content']['node.add_page'])) {
+      // Loop through all available node types, adding a button for each type of
+      // node the user has access to create.
       /** @var \Drupal\node\NodeTypeInterface $type */
       foreach ($manager->getStorage('node_type')->loadMultiple() as $type) {
+        // Check user access.
         $access = $manager->getAccessControlHandler('node')->createAccess($type->id(), NULL, [], TRUE);
+
         if ($access->isAllowed()) {
           $url = new Url('node.add', ['node_type' => $type->id()]);
           $links[] = [
@@ -127,13 +135,21 @@ function material_admin_support_preprocess_block(&$variables) {
         }
       }
     }
-    elseif (isset($variables['content']['media.add']) && \Drupal::moduleHandler()->moduleExists('media')) {
-      /** @var \Drupal\media\Entity\MediaType $type */
+
+    // Convert the 'media add' page into FABs.
+    if (\Drupal::moduleHandler()->moduleExists('media') && isset($variables['content']['media.add'])) {
+      // Assume that the user does not have the ability to add media until
+      // proven otherwise.
       $any_access = FALSE;
+
+      // Loop through all available media types, adding a button for each type
+      // of media the user has access to create.
+      /** @var \Drupal\media\Entity\MediaType $type */
       foreach ($manager->getStorage('media_type')->loadMultiple() as $type) {
+        // Check user access.
         $access = $manager->getAccessControlHandler('media')->createAccess($type->id(), NULL, [], TRUE);
+
         if ($access->isAllowed()) {
-          $any_access = TRUE;
           $url = new Url('entity.media.add_form', ['media_type' => $type->id()]);
           $links[] = [
             'color' => type_style_get_style($type, 'color', '#039BE5'),
@@ -141,8 +157,14 @@ function material_admin_support_preprocess_block(&$variables) {
             'href' => $url->toString(),
             'tooltip' => $type->label(),
           ];
+
+          // The user can add at least one type of media.
+          $any_access = TRUE;
         }
       }
+
+      // Add an additional FAB to upload media in bulk if the user can add at
+      // least one type of media.
       if ($any_access && isset($variables['content']['lightning_media.bulk_upload'])) {
         $url = new Url('lightning_media.bulk_upload');
         $links[] = [
@@ -153,15 +175,17 @@ function material_admin_support_preprocess_block(&$variables) {
         ];
       }
     }
-  }
-  if (!empty($links)) {
-    $variables['content'] = [
-      '#theme' => 'material_admin_support_fab',
-      '#links' => $links,
-      '#cache' => [
-        'contexts' => ['route', 'user.permissions'],
-      ],
-    ];
+
+    // Convert the links into FABs, if any are available.
+    if (!empty($links)) {
+      $variables['content'] = [
+        '#theme' => 'material_admin_support_fab',
+        '#links' => $links,
+        '#cache' => [
+          'contexts' => ['route', 'user.permissions'],
+        ],
+      ];
+    }
   }
 }
 
@@ -177,7 +201,15 @@ function material_admin_support_module_implements_alter(&$implementations, $hook
 }
 
 /**
- * Attaches the icon picker onto a form element.
+ * Implements hook_type_style_form_alter().
+ */
+function material_admin_support_type_style_form_alter(array &$form) {
+  // Add a picker to the type style form for material icons.
+  _material_admin_support_attach_iconpicker($form['type_style']['icon']);
+}
+
+/**
+ * A helper function to attach a material icon picker to a form element.
  *
  * @param array &$element
  *   A render array element, which should be a textfield.
@@ -188,21 +220,18 @@ function _material_admin_support_attach_iconpicker(array &$element) {
 }
 
 /**
- * Implements hook_type_style_form_alter().
- */
-function material_admin_support_type_style_form_alter(array &$form) {
-  _material_admin_support_attach_iconpicker($form['type_style']['icon']);
-}
-
-/**
  * Implements hook_ENTITY_TYPE_insert().
  */
 function material_admin_support_view_insert(ViewEntityInterface $view) {
-  $module_handler = \Drupal::moduleHandler();
   if (\Drupal::isConfigSyncing()) {
     return;
   }
-  elseif ($module_handler->moduleExists('lightning_media') && $view->id() === 'media') {
+
+  $module_handler = \Drupal::moduleHandler();
+
+  // Customize the default media browser provided by the Lightning Media module.
+  if ($module_handler->moduleExists('lightning_media') && $view->id() === 'media') {
+    // Add a new 'media_browser' view mode to media.
     if (!EntityViewMode::load('media.media_browser')) {
       $view_mode = EntityViewMode::create([
         'id' => 'media.media_browser',
@@ -270,16 +299,27 @@ function material_admin_support_view_insert(ViewEntityInterface $view) {
       'entity_type' => 'media',
       'plugin_id' => 'rendered_entity',
     ];
+
+    // The 'Browser' display.
     $display = &$view->getDisplay('entity_browser_1');
+
+    // Render the media using the 'media_browser' view mode instead of
+    // displaying a thumbnail of it.
     if (!empty($display)) {
       unset($display['display_options']['fields']['thumbnail__target_id']);
       $display['display_options']['fields']['rendered_entity'] = $field;
     }
+
+    // The 'Image Browser' display.
     $display = &$view->getDisplay('entity_browser_2');
+
+    // Render the media using the 'media_browser' view mode instead of
+    // displaying a thumbnail of it.
     if (!empty($display)) {
       unset($display['display_options']['fields']['thumbnail__target_id']);
       $display['display_options']['fields']['rendered_entity'] = $field;
     }
+
     $view->save();
   }
 }
@@ -292,6 +332,7 @@ function material_admin_support_preprocess_views_view(&$variables) {
   $view = $variables['view'];
   $style_plugin_options = $view->style_plugin->options;
 
+  // Attach the browser library to media browser views.
   if (!empty($style_plugin_options['row_class']) && strpos($style_plugin_options['row_class'], 'browser--item') !== FALSE) {
     $variables['#attached']['library'][] = 'material_admin_support/browsers';
   }

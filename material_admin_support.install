@@ -11,151 +11,190 @@
 function material_admin_support_install() {
   $entity_type_manager = \Drupal::entityTypeManager();
   $module_handler = \Drupal::moduleHandler();
-  // Generate Type Style defaults for all content/media types, with some smart
-  // presets built-in.
-  $style_presets = [
-    'article' => [
-      'color' => '#039BE5',
-      'icon' => 'book',
-    ],
-    'page' => [
-      'color' => '#f57f17',
-      'icon' => 'web_asset',
-    ],
-    'product' => [
-      'color' => '#43A047',
-      'icon' => 'shopping_cart',
-    ],
-    'landing_page' => [
-      'color' => '#009688',
-      'icon' => 'star',
-    ],
-  ];
+
+  // Add type style configuration for common content types.
   if ($module_handler->moduleExists('node')) {
+    $node_type_style_presets = [
+      'article' => [
+        'color' => '#039BE5',
+        'icon' => 'book',
+      ],
+      'page' => [
+        'color' => '#f57f17',
+        'icon' => 'web_asset',
+      ],
+      'product' => [
+        'color' => '#43A047',
+        'icon' => 'shopping_cart',
+      ],
+      'landing_page' => [
+        'color' => '#009688',
+        'icon' => 'star',
+      ],
+    ];
+
     /** @var \Drupal\node\NodeTypeInterface[] $content_types */
     $content_types = $entity_type_manager
       ->getStorage('node_type')
       ->loadMultiple();
+
     foreach ($content_types as $id => $type) {
-      if (empty($type->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
-        $type->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
-        $type->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
+      if (empty($type->getThirdPartySettings('type_style')) && isset($node_type_style_presets[$id])) {
+        $type->setThirdPartySetting('type_style', 'color', $node_type_style_presets[$id]['color']);
+        $type->setThirdPartySetting('type_style', 'icon', $node_type_style_presets[$id]['icon']);
         $type->save();
       }
     }
   }
-  $style_presets = [
-    'document' => [
-      'color' => '#43A047',
-      'icon' => 'insert_drive_file',
-    ],
-    'image' => [
-      'color' => '#2196F3',
-      'icon' => 'insert_photo',
-    ],
-    'video' => [
-      'color' => '#F44336',
-      'icon' => 'movie',
-    ],
-    'tweet' => [
-      'color' => '#03A9F4',
-      'icon' => 'twitter',
-    ],
-    'instagram' => [
-      'color' => '#AB47BC',
-      'icon' => 'instagram',
-    ],
-  ];
+
+  // Add type style configuration for common media types.
   if ($module_handler->moduleExists('media')) {
+    $media_type_style_presets = [
+      'document' => [
+        'color' => '#43A047',
+        'icon' => 'insert_drive_file',
+      ],
+      'image' => [
+        'color' => '#2196F3',
+        'icon' => 'insert_photo',
+      ],
+      'video' => [
+        'color' => '#F44336',
+        'icon' => 'movie',
+      ],
+      'tweet' => [
+        'color' => '#03A9F4',
+        'icon' => 'twitter',
+      ],
+      'instagram' => [
+        'color' => '#AB47BC',
+        'icon' => 'instagram',
+      ],
+    ];
+
     /** @var \Drupal\media\MediaTypeInterface[] $media_types */
     $media_types = $entity_type_manager
       ->getStorage('media_type')
       ->loadMultiple();
+
     foreach ($media_types as $id => $bundle) {
-      if (empty($bundle->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
-        $bundle->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
-        $bundle->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
+      if (empty($bundle->getThirdPartySettings('type_style')) && isset($media_type_style_presets[$id])) {
+        $bundle->setThirdPartySetting('type_style', 'color', $media_type_style_presets[$id]['color']);
+        $bundle->setThirdPartySetting('type_style', 'icon', $media_type_style_presets[$id]['icon']);
         $bundle->save();
       }
     }
   }
-  $style_presets = [
-    'archived' => [
-      'color' => '#00897b',
-      'icon' => 'archive',
-    ],
-    'draft' => [
-      'color' => '#EF6C00',
-      'icon' => 'edit',
-    ],
-    'needs_review' => [
-      'color' => '#ff8f00',
-      'icon' => 'speaker_notes',
-    ],
-    'published' => [
-      'color' => '#689f38',
-      'icon' => 'public',
-    ],
-  ];
-  if ($module_handler->moduleExists('type_style_moderation')) {
+
+  // Add type style configuration for common moderation states and transitions.
+  if ($module_handler->moduleExists('type_style_moderation') && $module_handler->moduleExists('workbench_moderation')) {
+    $workbench_moderation_type_style_presets = [
+      'archived' => [
+        'color' => '#00897b',
+        'icon' => 'archive',
+      ],
+      'draft' => [
+        'color' => '#EF6C00',
+        'icon' => 'edit',
+      ],
+      'needs_review' => [
+        'color' => '#ff8f00',
+        'icon' => 'speaker_notes',
+      ],
+      'published' => [
+        'color' => '#689f38',
+        'icon' => 'public',
+      ],
+    ];
+
     /** @var \Drupal\workbench_moderation\ModerationStateInterface[] $moderation_states */
     $moderation_states = $entity_type_manager
       ->getStorage('moderation_state')
       ->loadMultiple();
+
     foreach ($moderation_states as $id => $state) {
-      if (empty($state->getThirdPartySettings('type_style')) && isset($style_presets[$id])) {
-        $state->setThirdPartySetting('type_style', 'color', $style_presets[$id]['color']);
-        $state->setThirdPartySetting('type_style', 'icon', $style_presets[$id]['icon']);
+      if (empty($state->getThirdPartySettings('type_style')) && isset($workbench_moderation_type_style_presets[$id])) {
+        $state->setThirdPartySetting('type_style', 'color', $workbench_moderation_type_style_presets[$id]['color']);
+        $state->setThirdPartySetting('type_style', 'icon', $workbench_moderation_type_style_presets[$id]['icon']);
         $state->save();
       }
     }
+
     /** @var \Drupal\workbench_moderation\ModerationStateTransitionInterface[] $moderation_state_transitions */
     $moderation_state_transitions = $entity_type_manager
       ->getStorage('moderation_state_transition')
       ->loadMultiple();
+
     foreach ($moderation_state_transitions as $id => $transition) {
-      if (empty($transition->getThirdPartySettings('type_style')) && isset($style_presets[$transition->getToState()])) {
-        $transition->setThirdPartySetting('type_style', 'color', $style_presets[$transition->getToState()]['color']);
-        $transition->setThirdPartySetting('type_style', 'icon', $style_presets[$transition->getToState()]['icon']);
+      if (empty($transition->getThirdPartySettings('type_style')) && isset($workbench_moderation_type_style_presets[$transition->getToState()])) {
+        $transition->setThirdPartySetting('type_style', 'color', $workbench_moderation_type_style_presets[$transition->getToState()]['color']);
+        $transition->setThirdPartySetting('type_style', 'icon', $workbench_moderation_type_style_presets[$transition->getToState()]['icon']);
         $transition->setSyncing(TRUE);
         $transition->save();
       }
     }
   }
-  // Add material classes to known views.
+
+  // Add type style configuration for common commerce products.
+  if ($module_handler->moduleExists('commerce_product')) {
+    // Commerce product support.
+    $commerce_product_type_style_preset = [
+      'color' => '#d3d3d3',
+      'icon' => 'shopping_cart',
+    ];
+
+    /** @var \Drupal\commerce_product\Entity\ProductTypeInterface[] $product_types */
+    $product_types = $entity_type_manager
+      ->getStorage('commerce_product_type')
+      ->loadMultiple();
+
+    foreach ($product_types as $id => $bundle) {
+      $bundle->setThirdPartySetting('type_style', 'color', $commerce_product_type_style_preset['color']);
+      $bundle->setThirdPartySetting('type_style', 'icon', $commerce_product_type_style_preset['icon']);
+      $bundle->save();
+    }
+  }
+
+  // Customize existing views.
   if ($module_handler->moduleExists('views')) {
     $storage = $entity_type_manager
       ->getStorage('view');
+
+    // Customize the 'content browser' view.
     /** @var \Drupal\views\ViewEntityInterface $view */
     if (($view = $storage->load('content_browser')) && $view !== NULL) {
       material_admin_support_view_insert($view);
     }
+
+    // Customize the 'media' view.
     /** @var \Drupal\views\ViewEntityInterface $view */
     if (($view = $storage->load('media')) && $view !== NULL) {
       material_admin_support_view_insert($view);
     }
 
-    // Change every entity_browser view display's style settings config.
     $entity_browser_view_displays = [];
+
     /** @var \Drupal\views\ViewEntityInterface[] $views */
     $views = $storage->loadMultiple();
 
-    // Collect views and all their displays with entity_browser display plugin.
+    // Retrieve all entity browser view displays.
     foreach ($views as $view_id => $view_data) {
       foreach ($view_data->get('display') as $display_id => $display_definitions) {
+        // Verify that the view displays an entity browser.
         if ($display_definitions['display_plugin'] !== 'entity_browser') {
           continue;
         };
 
-        // Check whether display has overrides compared to the master display or
-        // not. If latter, than we have to modify the master.
+        // Check whether a display is overridden. If so, the master must be
+        // modified.
         $display_options = array_filter($display_definitions['display_options']);
         $display_to_process = empty($display_options['row']) ? 'default' : $display_id;
         $entity_browser_view_displays[$view_id][$display_to_process] = $display_to_process;
       }
     }
 
-    // Change style configs.
+    // Alter the display options of each entity browser view, adding additional
+    // classes and styling.
     foreach ($entity_browser_view_displays as $view_id => $display_ids) {
       foreach ($display_ids as $display_id) {
         $display = &$views[$view_id]->getDisplay($display_id);
@@ -163,6 +202,8 @@ function material_admin_support_install() {
         $display['display_options']['style']['options']['row_class'] = 'browser--item';
         $display['display_options']['css_class'] = 'browser--row';
 
+        // Notify administrators that the view has been altered by logging a
+        // message.
         \Drupal::logger('material_admin_support')->info('View config for display @display-id of @view-id view changed', [
           '@display-id' => $display_id,
           '@view-id' => $view_id,
@@ -170,23 +211,6 @@ function material_admin_support_install() {
       }
 
       $views[$view_id]->save();
-    }
-  }
-
-  // Commerce product support.
-  $product_style_preset = [
-    'color' => '#d3d3d3',
-    'icon' => 'shopping_cart',
-  ];
-  if ($module_handler->moduleExists('commerce_product')) {
-    /** @var \Drupal\commerce_product\Entity\ProductTypeInterface[] $product_types */
-    $product_types = $entity_type_manager
-      ->getStorage('commerce_product_type')
-      ->loadMultiple();
-    foreach ($product_types as $id => $bundle) {
-      $bundle->setThirdPartySetting('type_style', 'color', $product_style_preset['color']);
-      $bundle->setThirdPartySetting('type_style', 'icon', $product_style_preset['icon']);
-      $bundle->save();
     }
   }
 }
