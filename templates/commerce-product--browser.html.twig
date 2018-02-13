@@ -18,7 +18,7 @@
  * @ingroup themeable
  */
 #}
-<article{{ attributes.addClass('card', 'content-browser-card', 'card--product') }} style="background: {{ type_style('commerce_product_type', 'individual', 'color', '#d3d3d3') }}">
+<article{{ attributes.addClass('card', 'content-browser-card', 'card--product')|without('style') }} style="background: {{ type_style(product_entity, 'color', '#d3d3d3') }}">
   <div class="card-image">
     <div{{ content_attributes.addClass('card-image-inside') }}>
       {{ product|without('variation_attributes', 'title') }}

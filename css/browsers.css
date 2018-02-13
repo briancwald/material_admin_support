@@ -101,12 +101,16 @@ nav.eb-tabs  li:only-child {
   display: none;
 }
 
-.card .card-image img {
+.card .card-image img,
+.card .card-image audio,
+.card .card-image video {
+  width: 100%;
   height: auto;
   /* Please, don't change these rules. */
   display: inline-block;
   vertical-align: bottom;
   border-radius: 0;
+  margin: 0;
 }
 
 .card [class*=socicon-] {
@@ -124,10 +128,12 @@ nav.eb-tabs  li:only-child {
   border-top: 1px solid lightgray;
   max-height: 70px;
   height: 70px;
+  box-sizing: border-box;
 }
 
 .entity-browser-form {
   padding-bottom: 70px;
+  background: white;
 }
 
 #panels-ipe-tray,
@@ -182,7 +188,9 @@ nav.eb-tabs  li:only-child {
 
 .browser--item .card,
 .browser--item > .views-field-rendered-entity,
-.browser--item > .views-field-rendered-entity > .field-content {
+.browser--item > .views-field-content-browser-preview,
+.browser--item > .views-field-rendered-entity > .field-content,
+.browser--item > .views-field-content-browser-preview > .field-content {
   display: flex;
   width: 100%;
   border-radius: 2px;
@@ -203,6 +211,15 @@ nav.eb-tabs  li:only-child {
   font-size: 12px;
   flex: 1 0 auto;
   transform: translateZ(0);
+  padding: 24px;
+}
+
+.browser--item .card-content p {
+  margin-bottom: 0;
+}
+
+.browser--item .card-content .left {
+  margin-right: 15px;
 }
 
 @media screen and (min-width: 700px) {
@@ -235,6 +252,7 @@ nav.eb-tabs  li:only-child {
   margin-bottom: 1.5rem;
   padding: 0 0.75rem;
   transform: translateZ(0);
+  box-sizing: border-box;
 }
 
 @media screen and (min-width: 450px) {

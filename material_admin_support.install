@@ -200,6 +200,9 @@ function material_admin_support_install() {
         $display = &$views[$view_id]->getDisplay($display_id);
         $display['display_options']['style']['type'] = 'default';
         $display['display_options']['style']['options']['row_class'] = 'browser--item';
+        if ($display_id !== 'default') {
+          $display['display_options']['defaults']['css_class'] = FALSE;
+        }
         $display['display_options']['css_class'] = 'browser--row';
 
         // Notify administrators that the view has been altered by logging a

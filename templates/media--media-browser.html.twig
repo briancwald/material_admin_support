@@ -12,7 +12,7 @@
  * @ingroup themeable
  */
 #}
-<article {{ attributes.addClass('card', 'media-browser-card') }} data-selectable style="background: {{ type_style(elements['#media'], 'color', '#2196F3') }}">
+<article{{ attributes.addClass('card', 'media-browser-card')|without('style') }} style="background: {{ type_style(elements['#media'], 'color', '#2196F3') }}">
   <div class="card-image">
     {{ content }}
     <i class="material-icons check-indicator">check_circle</i>
