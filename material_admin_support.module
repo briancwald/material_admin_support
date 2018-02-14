@@ -73,14 +73,13 @@ function material_admin_support_preprocess_commerce_product__browser(&$variables
 /**
  * Implements hook_library_info_alter().
  */
-function material_admin_library_info_alter(&$libraries, $extension) {
+function material_admin_support_library_info_alter(&$libraries, $extension) {
   $path = '/' . drupal_get_path('module', 'material_admin_support');
 
   $base_definition = [
     'version' => 'VERSION',
     'css' => [
       'base' => [
-        $path . '/css/browsers.css' => [],
         $path . '/css/browsers.css' => [],
       ],
     ],

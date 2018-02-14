@@ -65,7 +65,7 @@
  * @ingroup themeable
  */
 #}
-<article {{ attributes.addClass('card', 'content-browser-card') }} style="background: {{ type_style(node, 'color', '#2196F3') }}">
+<article{{ attributes.addClass('card', 'content-browser-card')|without('style') }} style="background: {{ type_style(node, 'color', '#2196F3') }}">
   <div class="card-image">
     <div{{ content_attributes }}>
       {{ content }}

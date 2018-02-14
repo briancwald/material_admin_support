@@ -12,9 +12,8 @@
   height: auto;
 }
 
-.card--product .card-content--product {
+.card--product {
   background: #d3d3d3;
-  color: #000;
 }
 
 .card--product:hover .check-indicator {
