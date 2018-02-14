@@ -1,0 +1,5 @@
+services:
+  material_admin_support.route_subscriber:
+    class: Drupal\material_admin_support\Routing\RouteSubscriber
+    tags:
+      - { name: 'event_subscriber' }
