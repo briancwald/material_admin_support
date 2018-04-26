@@ -3,10 +3,6 @@
  * Shared styles between the content and media browsers.
  */
 
-.views-field-entity-browser-select {
-  display: none;
-}
-
 nav.eb-tabs  ul {
   border-bottom: none;
 }
